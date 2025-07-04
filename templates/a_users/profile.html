@@ -1,0 +1,64 @@
+{% extends 'layouts/d.html' %}
+
+{% block content %}
+
+<div id="profile" class="flex flex-col items-center">
+    
+    <div class="w-full md:w-[36rem] lg:w-[50rem]">
+        <div class="card p-6">
+            <div class="text-center flex flex-col items-center">
+                <img class="w-36 h-36 rounded-full object-cover mb-4" src="{{ profile.avatar }}" />
+                <div class="text-center max-w-md">
+                    <h1>{{ profile.name }}</h1>
+                    <div class="text-gray-400 mb-2 -mt-3">@{{ profile.user.username }}</div>
+                    <div class="flex items-center justify-center mx-auto">
+                        <img class="object-cover h-6 mr-1 opacity-60" src="https://img.icons8.com/material-outlined/50/000000/marker.png"> 
+                        {% if profile.location %}
+                        {{ profile.location }}
+                        {% else %}
+                        Planet Earth
+                        {% endif %}
+                    </div>
+                    <div class="my-8">
+                        {% if profile.bio %}
+                        {{ profile.bio }}
+                        {% else %}
+                        Professional procrastinator
+                        {% endif %}
+                    </div> 
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tabs" class="flex justify-center my-4 gap-2" hx-target="#tab-contents" hx-swap="innerHTML"
+    _="on htmx:afterOnLoad take .selected for event.target"> 
+        <a hx-get="{% url 'userprofile' profile.user.username %}" class="tab selected">Latest</a>
+        <a hx-get="{% url 'userprofile' profile.user.username %}?top-posts" class="tab">Top Posts</a>  
+        <a hx-get="{% url 'userprofile' profile.user.username %}?top-comments" class="tab">Top Comments</a>
+        <a hx-get="{% url 'userprofile' profile.user.username %}?liked-posts" class="tab">Liked Posts</a>
+    </div>
+
+    <div id="tab-contents" class="w-full flex flex-col items-center">
+        
+        <div class="grid place-items-start gap-x-8 mx-auto max-w-xl 
+        {% if posts.count <= 1 %}
+        {% elif posts.count == 2 %}lg:grid-cols-2 lg:max-w-5xl
+        {% else %}lg:grid-cols-2 lg:max-w-5xl xl:grid-cols-3 xl:max-w-7xl{% endif %}">
+
+        {% if posts %}
+            {% for post in posts %}
+            {% include 'a_posts/post.html' %}
+            {% endfor %}
+        {% else %}
+            <div class="w-full text-center mt-10">No posts just yet</div>
+        {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
